@@ -108,7 +108,6 @@ object CSYE7200API{
                        tracks: Tracks,
                        Ptype:String,
                        uri:String
-
                      )
   // Function to fetch playlist tracks from Spotify API
   def getPlaylistTracks(playlistId: String,token:String): List[(String,Int)] = {
@@ -128,7 +127,6 @@ object CSYE7200API{
 
   }
 
-  // Function to fetch artist details from Spotify API
   def getArtistDetails(artistId: String,token:String): Option[ArtistDetails] = {
     val url = s"https://api.spotify.com/v1/artists/$artistId"
     val headers = Map("Authorization" -> s"Bearer $token")
@@ -178,11 +176,9 @@ println(tracks.length)
 
     //val top10LongestSongs = tracks.sortBy(-_.duration_ms).take(10)
 
-    // Part 1: Display top 10 longest songs
     println("Part 1:")
     //top10LongestSongs.foreach(track => println(s"${track.name} , ${track.duration_ms}"))
 
-    // Part 2: Display artist details for each artist in the top 10 longest songs
     /*println("\nPart 2:")
     top10LongestSongs.flatMap(_.artists).distinct.foreach { artist =>
       val artistId = artist("id")
