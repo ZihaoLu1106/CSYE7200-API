@@ -88,12 +88,15 @@ object CSYE7200API{
                      href: String,
                      items: List[Item]
                    )
-
+  case class Followers(
+                      href:String,
+                      total:Int
+                      )
   case class Playlist(
                        collaborative: Boolean,
                        description: String,
                        external_urls: ExternalUrl,
-                       followers: Map[String, Int],
+                       followers: Followers,
                        href: String,
                        id: String,
                        images: List[Image],
@@ -102,7 +105,10 @@ object CSYE7200API{
                        primary_color: Option[String],
                        public: Boolean,
                        snapshot_id: String,
-                       tracks: Tracks
+                       tracks: Tracks,
+                       Ptype:String,
+                       uri:String
+
                      )
   // Function to fetch playlist tracks from Spotify API
   def getPlaylistTracks(playlistId: String,token:String): List[(String,Int)] = {
@@ -148,7 +154,7 @@ object CSYE7200API{
         "client_secret" -> clientSecret
       )
     )
-if(tokenResponse.statusCode==200){
+    if(tokenResponse.statusCode==200){
   println("Access token:")
   println(tokenResponse.text)
 }
