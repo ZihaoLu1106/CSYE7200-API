@@ -11,28 +11,105 @@ import scala.util.{Failure, Success}
 object CSYE7200API{
   case class AccessTokenResponse(access_token: String, token_type: String, expires_in: Int)
   case class ArtistDetails( followers: Option[Map[String, Int]])
-  case class ExternalUrls(spotify: String)
-  case class Followers(href: String, total: Int)
-  case class Owner(external_urls: ExternalUrls, followers: Followers, href: String, id: String, `type`: String, uri: String, display_name: String)
-  case class Image(url: String, height: Int, width: Int)
-  case class Restrictions(reason: String)
-  case class Artist(external_urls: ExternalUrls, href: String, id: String, name: String, `type`: String, uri: String, popularity: Int, genres: List[String], images: List[Image])
-  case class Album(album_type: String, total_tracks: Int, available_markets: List[String], external_urls: ExternalUrls, href: String, id: String, images: List[Image], name: String, release_date: String, release_date_precision: String, restrictions: Restrictions, `type`: String, uri: String, artists: List[Artist])
-  case class ExternalIds(isrc: String, ean: String, upc: String)
-  case class ExternalUrlsTrack(spotify: String)
-  case class LinkedFrom()
-  case class Track(album: Album, artists: List[Artist], available_markets: List[String], disc_number: Int, duration_ms: Int, explicit: Boolean, external_ids: ExternalIds, external_urls: ExternalUrlsTrack, href: String, id: String, is_playable: Boolean, linked_from: LinkedFrom, restrictions: Restrictions, name: String, popularity: Int, preview_url: String, track_number: Int, `type`: String, uri: String, is_local: Boolean)
-  case class AddedBy(external_urls: ExternalUrls, followers: Followers, href: String, id: String, `type`: String, uri: String)
-  case class Item(added_at: String, added_by: AddedBy, is_local: Boolean, track: Track)
-  case class Tracks(href: String, limit: Int, next: String, offset: Int, previous: String, total: Int, items: List[Item])
-  case class SpotifyPlaylist(collaborative: Boolean, description: String, external_urls: ExternalUrls, followers: Followers, href: String, id: String, images: List[Image], name: String, owner: Owner, public: Boolean, snapshot_id: String, tracks: Tracks, `type`: String, uri: String)
+  case class ExternalUrl(spotify: String)
 
+  case class Owner(
+                    display_name: String,
+                    external_urls: ExternalUrl,
+                    href: String,
+                    id: String,
+                    `type`: String,
+                    uri: String
+                  )
+
+  case class Image(url: String)
+
+  case class Artist(
+                     external_urls: ExternalUrl,
+                     href: String,
+                     id: String,
+                     name: String,
+                     `type`: String,
+                     uri: String
+                   )
+
+  case class Album(
+                    album_type: String,
+                    artists: List[Artist],
+                    available_markets: List[String],
+                    external_urls: ExternalUrl,
+                    href: String,
+                    id: String,
+                    images: List[Image],
+                    name: String,
+                    release_date: String,
+                    release_date_precision: String,
+                    total_tracks: Int,
+                    `type`: String,
+                    uri: String
+                  )
+
+  case class Track(
+                    album: Album,
+                    artists: List[Artist],
+                    available_markets: List[String],
+                    disc_number: Int,
+                    duration_ms: Int,
+                    explicit: Boolean,
+                    external_ids: Map[String, String],
+                    external_urls: ExternalUrl,
+                    href: String,
+                    id: String,
+                    is_local: Boolean,
+                    name: String,
+                    popularity: Int,
+                    preview_url: String,
+                    track_number: Int,
+                    `type`: String,
+                    uri: String
+                  )
+
+  case class AddedBy(
+                      external_urls: ExternalUrl,
+                      href: String,
+                      id: String,
+                      `type`: String,
+                      uri: String
+                    )
+
+  case class Item(
+                   added_at: String,
+                   added_by: AddedBy,
+                   is_local: Boolean,
+                   track: Track
+                 )
+
+  case class Tracks(
+                     href: String,
+                     items: List[Item]
+                   )
+
+  case class Playlist(
+                       collaborative: Boolean,
+                       description: String,
+                       external_urls: ExternalUrl,
+                       followers: Map[String, Int],
+                       href: String,
+                       id: String,
+                       images: List[Image],
+                       name: String,
+                       owner: Owner,
+                       primary_color: Option[String],
+                       public: Boolean,
+                       snapshot_id: String,
+                       tracks: Tracks
+                     )
   // Function to fetch playlist tracks from Spotify API
   def getPlaylistTracks(playlistId: String,token:String): List[(String,Int)] = {
     val url = s"https://api.spotify.com/v1/playlists/$playlistId"
     val headers = Map("Authorization" -> s"Bearer $token")
     val response = requests.get(url, headers = headers)
-    val parsedJson = decode[SpotifyPlaylist](response.text)
+    val parsedJson = decode[Playlist](response.text())
     parsedJson match {
       case Right(playlist) =>
         val items = playlist.tracks.items
